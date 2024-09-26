@@ -1,0 +1,121 @@
+index.html
+<html><head><title>New User Registration Page</title></head>
+ <body>
+ <form action="Register.jsp" >
+ <h1> New User Registration Page</h1>
+ Enter User Name:- <input type="text" name="txtName" ><br>
+ Enter Password:- <input type="password" name="txtPass1" ><br>
+ Re-Enter Password:- <input type="password" name="txtPass2" ><br>
+Enter Email:- <input type="text" name="txtEmail" ><br>
+ Enter Country Name:- <select name="txtCon" >
+ <option>India</option>
+ <option>France</option>
+ <option>England</option>
+ <option>Argentina</option>
+ </select><br>
+ <input type="submit" value="REGISTER" > <input type="RESET" >
+ </form>
+ </body>
+</html>
+
+
+
+login.html
+<html>
+ <body>
+ <h1>Login Page</h1>
+ <form action="Login.jsp" >
+ Enter User Name:- <input type="text" name="txtName" ><br>
+ Enter Password:- <input type="password" name="txtPass" ><br>
+ <input type="submit" value="LOGIN" ><input type="Reset" >
+ </form>
+ </body>
+</html>
+
+
+login.jsp
+<%@page contentType="text/html" import="java.sql.*"%>
+<html>
+ <body>
+ <h1>Registration JSP Page</h1>
+ <%
+ String uname=request.getParameter("txtName");
+ String pass = request.getParameter("txtPass");
+ ResultSet rs=null;
+ try
+ {
+ Class.forName("org.apache.derby.jdbc.EmbeddedDriver");
+ Connection con = 
+DriverManager.getConnection("jdbc:derby://localhost:1527/logindb","anshu","anshu");
+ Statement stmt = con.createStatement();
+ rs = stmt.executeQuery("select password from anshu where username='"+uname+"'");
+ rs.next();
+ if(pass.equals(rs.getString(1)))
+ {
+ out.println("<h1>LOGIN SUCCESSFULLL</h1>");
+ }
+ else
+ {
+ out.println("<h1>password does not match !!!!!</h1>");
+ %>
+ <jsp:include page="index.html" ></jsp:include>
+ <% 
+ }
+ }
+ catch(Exception e)
+ {
+out.println("<h1>User does not exist !!!!!</h1>");
+ %>
+ <jsp:include page="index.html" ></jsp:include>
+ <% }
+ %>
+ </body>
+</html>
+
+
+
+
+
+register.jsp
+<%@page contentType="text/html" import="java.sql.*"%>
+<html><body>
+ <h1>Registration JSP Page</h1>
+ <%
+ String uname=request.getParameter("txtName");
+ String pass1 = request.getParameter("txtPass1");
+ String pass2 = request.getParameter("txtPass2");
+ String email = request.getParameter("txtEmail");
+ String ctry = request.getParameter("txtCon");
+ if(pass1.equals(pass2))
+ {
+ try
+ {
+ Class.forName("org.apache.derby.jdbc.EmbeddedDriver");
+ Connection con = 
+DriverManager.getConnection("jdbc:derby://localhost:1527/logindb","anshu","anshu");
+ PreparedStatement stmt = con.prepareStatement("insert into anshu values (?,?,?,?)");
+ stmt.setString(1, uname); 
+ stmt.setString(2, pass1);
+ stmt.setString(3, email); 
+ stmt.setString(4, ctry);
+ int row = stmt.executeUpdate();
+ if(row==1)
+ {
+ out.println("Registration Successful"); }
+ else 
+ { 
+ out.println("Registration FAILED !!!!");
+ %> 
+ <jsp:include page="index.html" ></jsp:include>
+ <% 
+ }
+ }catch(Exception e){out.println(e);}
+ }
+ else 
+ {
+ out.println("<h1>Password Mismatch</h1>");
+ %>
+ <jsp:include page="index.html" ></jsp:include>
+<% } %>
+ </body>
+</html>
