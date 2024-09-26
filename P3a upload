@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html>
+    <head>
+        <title>upload</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    </head>
+    <body>
+        <form action="UploadServlet" method="post" enctype="multipart/form-data">
+            Select file to upload: <input type="file" name="f1">
+            Destination: <input type="text" name="destination">
+            <br>
+            <input type="submit" value="Upload File" name="Upload">
+        </form> 
+            
+    </body>
+</html>
+
+import java.io.*;
+import javax.servlet.*;
+import javax.servlet.annotation.MultipartConfig;
+import javax.servlet.http.*;
+
+/**
+ * Servlet to handle file uploads.
+ */
+@MultipartConfig
+public class UploadServlet extends HttpServlet {
+
+    // Processes both GET and POST requests.
+    protected void processRequest(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        response.setContentType("text/html;charset=UTF-8");
+        try (PrintWriter out = response.getWriter()) {
+            out.println("<!DOCTYPE html>");
+            out.println("<html>");
+            out.println("<head>");
+            out.println("<title>Servlet UploadServlet</title>");
+            out.println("</head>");
+            out.println("<body>");
+            out.println("<h1>Servlet UploadServlet at " + request.getContextPath() + "</h1>");
+            out.println("</body>");
+            out.println("</html>");
+        }
+    }
+
+    // Handles GET request.
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        processRequest(request, response);
+    }
+
+    // Handles POST request for file upload.
+    @Override
+    protected void doPost(HttpServletRequest req, HttpServletResponse res)
+            throws ServletException, IOException {
+        res.setContentType("text/html;charset=UTF-8");
+        PrintWriter out = res.getWriter();
+
+        // Get destination directory from the request
+        String path = req.getParameter("destination");
+
+        // Handle the file part of the form
+        Part filePart = req.getPart("f1");
+
+        // Extract filename from the file part (Use getSubmittedFileName for correct file name extraction)
+        String filename = getFileName(filePart);
+
+        if (filename == null || filename.isEmpty()) {
+            out.println("<br>No file selected for upload.");
+            return;
+        }
+
+        // Print file info to output
+        out.println("<br>File Name: " + filename);
+
+        // Prepare to save the file
+        File file = new File(path + File.separator + filename);
+        try (InputStream fileContent = filePart.getInputStream();
+             OutputStream os = new FileOutputStream(file)) {
+
+            byte[] buffer = new byte[1024];
+            int bytesRead;
+            while ((bytesRead = fileContent.read(buffer)) != -1) {
+                os.write(buffer, 0, bytesRead);
+            }
+
+            out.println("<br>File uploaded successfully to: " + file.getAbsolutePath());
+        } catch (FileNotFoundException e) {
+            out.println("<br>Error: " + e.getMessage());
+        } finally {
+            out.close();
+        }
+    }
+
+    // Utility method to get the filename from the file part
+    private String getFileName(Part part) {
+        String contentDisposition = part.getHeader("content-disposition");
+        if (contentDisposition != null) {
+            for (String token : contentDisposition.split(";")) {
+                if (token.trim().startsWith("filename")) {
+                    return token.substring(token.indexOf('=') + 1).trim().replace("\"", "");
+                }
+            }
+        }
+        return null;
+    }
+
+    // Provides servlet description.
+    @Override
+    public String getServletInfo() {
+        return "UploadServlet handles file upload functionality.";
+    }
+}
