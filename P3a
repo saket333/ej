@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>File Download App</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    </head>
+    <body>
+        <h1>File Download App</h1>
+        <p>Click on the links below to download the files:</p>
+        <a href="DownloadServlet?filename=SampleChapter.docx">Download Sample Chapter (Text File)</a>
+        <br/><br/>
+        <a href="DownloadServlet?filename=TOC.pdf">Download Table Of Contents (PDF File)</a>
+    </body>
+</html>
+
+import java.io.*;
+import javax.servlet.*;
+import javax.servlet.http.*;
+
+/**
+ * Servlet to handle file download requests.
+ */
+public class DownloadServlet extends HttpServlet {
+
+    @Override
+    protected void doGet(HttpServletRequest req, HttpServletResponse res)
+            throws ServletException, IOException {
+        
+        // Get the requested filename from the query parameter
+        String filename = req.getParameter("filename");
+
+        if (filename == null || filename.isEmpty()) {
+            res.setContentType("text/html");
+            res.getWriter().println("File name is missing!");
+            return;
+        }
+
+        // Construct the full path to the file on the desktop
+        String desktopPath = "C:\\Users\\Sukhbinder-2\\Desktop\\" + filename;
+
+        // Alternatively, using File.separator for platform independence:
+        // String desktopPath = "C:" + File.separator + "Users" + File.separator + "Sukhbinder-2" + File.separator + "Desktop" + File.separator + filename;
+
+        File file = new File(desktopPath);
+
+        if (!file.exists()) {
+            res.setContentType("text/html");
+            res.getWriter().println("File not found!");
+            return;
+        }
+
+        // Set the response content type and headers for file download
+        res.setContentType("APPLICATION/OCTET-STREAM");
+        res.setHeader("Content-Disposition", "attachment; filename=\"" + filename + "\"");
+
+        // Prepare streams to read the file and send it to the client
+        try (InputStream inputStream = new FileInputStream(file);
+             ServletOutputStream outputStream = res.getOutputStream()) {
+
+            byte[] buffer = new byte[1024];
+            int bytesRead;
+            while ((bytesRead = inputStream.read(buffer)) != -1) {
+                outputStream.write(buffer, 0, bytesRead);
+            }
+        } catch (IOException e) {
+            res.setContentType("text/html");
+            res.getWriter().println("Error in file download: " + e.getMessage());
+        }
+    }
+
+    @Override
+    protected void doPost(HttpServletRequest req, HttpServletResponse res)
+            throws ServletException, IOException {
+        doGet(req, res); // Delegate to doGet
+    }
+
+    @Override
+    public String getServletInfo() {
+        return "DownloadServlet handles file download requests.";
+    }
+}
