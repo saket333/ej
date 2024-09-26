@@ -1,0 +1,109 @@
+ create table queans(qno int primary key,
+          que varchar(200), op1 varchar(100), op2 
+varchar(100), op3 varchar(100), op4 varchar(100), ans varchar(3)); 
+insert into queans values();
+import javax.servlet.*;
+import javax.servlet.http.*;
+import java.io.*;
+import java.sql.*;
+
+public class QueAnsDBServlet extends HttpServlet {
+    @Override
+    public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        response.setContentType("text/html");
+        PrintWriter out = response.getWriter();
+        Connection con = null;
+        Statement st = null;
+        ResultSet rs = null;
+
+        try {
+            out.print("<html><body><br>");
+            out.println("<form method='post' action='Marks'>");
+
+            // Load the JDBC driver and connect to the database
+            Class.forName("org.apache.derby.jdbc.EmbeddedDriver");
+            con = DriverManager.getConnection("jdbc:derby://localhost:1527/queansdb", "simone", "anshu");
+            st = con.createStatement();
+
+            String sql = "SELECT * FROM queans";
+            rs = st.executeQuery(sql);
+            int i = 0;
+
+            out.print("<center>Online Exam</center>");
+            while (rs.next()) {
+                i++;
+                out.print("<br><br><hr>" + rs.getInt(1) + " ");
+                out.print(rs.getString(2)); // Question text
+                out.print("<br><input type='radio' name='" + i + "' value='op1'>" + rs.getString(3)); // Option 1
+                out.print("<br><input type='radio' name='" + i + "' value='op2'>" + rs.getString(4)); // Option 2
+                out.print("<br><input type='radio' name='" + i + "' value='op3'>" + rs.getString(5)); // Option 3
+                out.print("<br><input type='radio' name='" + i + "' value='op4'>" + rs.getString(6)); // Option 4
+                
+                // Store the correct answer as a hidden field
+                String ans = "ans" + i;
+                out.println("<br><input type='hidden' name='" + ans + "' value='" + rs.getString(7) + "'>");
+            }
+
+            out.println("<br><input type='hidden' name='total' value='" + i + "'>");
+            out.println("<input type='submit' value='Submit'>");
+            out.println("</form>");
+            out.print("</body></html>");
+        } catch (Exception e) {
+            out.println("<h3>ERROR: " + e.getMessage() + "</h3>");
+        } finally {
+            // Close resources to avoid leaks
+            try {
+                if (rs != null) rs.close();
+                if (st != null) st.close();
+                if (con != null) con.close();
+            } catch (SQLException ex) {
+                out.println("<h3>ERROR closing resources: " + ex.getMessage() + "</h3>");
+            }
+        }
+    }
+}
+
+
+import javax.servlet.*;
+import javax.servlet.http.*;
+import java.io.*;
+
+public class Marks extends HttpServlet {
+    @Override
+    public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        response.setContentType("text/html");
+        PrintWriter out = response.getWriter();
+        
+        try {
+            out.print("<html><body>");
+            
+            // Get the total number of questions from the form
+            int total = Integer.parseInt(request.getParameter("total"));
+            int marks = 0;
+
+            // Loop through each question
+            for (int i = 1; i <= total; i++) {
+                // Get the selected answer for the question (op1, op2, op3, op4)
+                String sel = request.getParameter(String.valueOf(i));
+                
+                // Get the correct answer for the question from the hidden input
+                String ans = request.getParameter("ans" + i);
+                
+                // Check if the selected answer matches the correct answer
+                if (sel != null && sel.equals(ans)) {
+                    marks++;
+                }
+            }
+
+            // Output the result to the user
+            out.println("<h2>Total Marks: " + marks + " out of " + total + "</h2>");
+            out.print("</body></html>");
+        } catch (Exception e) {
+            // Handle any exceptions and show an error message
+            out.println("<h3>ERROR: " + e.getMessage() + "</h3>");
+        }
+    }
+}
+
+
+
