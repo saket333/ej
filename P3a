@@ -9,7 +9,7 @@
         <h1>File Download App</h1>
         <p>Click on the links below to download the files:</p>
         <a href="DownloadServlet?filename=SampleChapter.docx">Download Sample Chapter (Text File)</a>
-        <br/><br/>
+        <br/><br/> 
         <a href="DownloadServlet?filename=TOC.pdf">Download Table Of Contents (PDF File)</a>
     </body>
 </html>
