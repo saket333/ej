@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html>
+    <head>
+        <title></title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    </head>
+    <body>
+        <form action="Validate.jsp"> 
+            Enter Your Name:- <input type="text" name="name" ><br>            
+            Enter Your Age:- <input type="text" name="age" ><br> 
+            Select Hobbies:-  
+            <input type="checkbox" name="hob" value="Singing">Singing 
+            <input type="checkbox" name="hob" value="Reading">Reading Books 
+            <input type="checkbox" name="hob" value="Football">Playing Football<br> 
+            Enter E-mail:- <input type="text" name="email" ><br> 
+            Select Gender:-  
+            <input type="radio" name="gender" value="male">Male 
+            <input type="radio" name="gender" value="female">Female 
+            <input type="radio" name="gender" value="other">Other<br> 
+            <input type="hidden" name="error" value=""> 
+            <input type="submit" value="Submit Form"> 
+ 
+        </form>
+    </body>
+</html>
+
+
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <title>JSP Page</title>
+    </head>
+    <body>
+       <%
+            String name = request.getParameter("name");
+            String age = request.getParameter("age");
+            String email = request.getParameter("email");
+            String errmsg = "";
+
+            // Check if name is provided
+            if(name == null || name.trim().equals("")) {
+                errmsg += "Please provide name<br>";
+            }
+
+            // Check if age is provided and valid
+            if(age == null || age.trim().equals("")) {
+                errmsg += "Please provide age<br>";
+            } else {
+                try {
+                    int ages = Integer.parseInt(age);
+                } catch(Exception e) {
+                    errmsg += "Invalid Age<br>";
+                }
+            }
+
+            // Email validation
+            if(email == null || email.trim().equals("")) {
+                errmsg += "Please provide an email<br>";
+            } else {
+                // Simple email pattern for validation
+                String emailPattern = "^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,6}$";
+                if(!email.matches(emailPattern)) {
+                    errmsg += "Invalid email format<br>";
+                }
+            }
+
+            // If there are no errors, show the success page
+            if (errmsg.trim().equals("")) {
+                %>
+                <jsp:include page="index.html"></jsp:include>
+                <%
+            } else {
+                // If there are errors, show the error message and the form data
+                out.println("<h3>Form submission failed with the following errors:</h3>");
+                out.println(errmsg + "<br>");
+                out.println("Name: " + name + "<br>");
+                out.println("Age: " + age + "<br>");
+                out.println("Hobbies: " + request.getParameter("hob") + "<br>");
+                out.println("Gender: " + request.getParameter("gender") + "<br>");
+                out.println("Email: " + email + "<br>");
+            }
+        %>
+    </body>
+</html>
+
