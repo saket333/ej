@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+
+<html> 
+    <body> 
+      <form action="ManageEmp.jsp" method="POST">
+    Employee Number: <input type="text" name="eno" required><br>
+    Employee Name: <input type="text" name="ename" required><br>
+    Employee Age: <input type="text" name="eage" required><br>
+    Designation: <input type="text" name="edesg" required><br>
+    Salary: <input type="text" name="sal" required><br>
+    <input type="submit" value="Submit">
+</form>
+
+    </body> 
+</html>
+
+<%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@page import= "java.sql.*" %>
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <title>Manage Employee</title>
+    </head>
+    <body>
+        <%
+            Connection con = null;
+            PreparedStatement ps = null;
+            ResultSet rs = null;
+            
+            // Retrieve parameters from request
+            String eno = request.getParameter("eno");
+            String ename = request.getParameter("ename");
+            String eage = request.getParameter("eage");
+            String edesg = request.getParameter("edesg");
+            String sal = request.getParameter("sal");
+            
+            // Debugging: Output retrieved values to ensure they are not null
+            out.println("Received Parameters:<br>");
+            out.println("eno: " + eno + "<br>");
+            out.println("ename: " + ename + "<br>");
+            out.println("eage: " + eage + "<br>");
+            out.println("edesg: " + edesg + "<br>");
+            out.println("sal: " + sal + "<br>");
+
+            try {
+                // Load the driver and establish connection
+                Class.forName("org.apache.derby.jdbc.EmbeddedDriver");
+                con = DriverManager.getConnection("jdbc:derby://localhost:1527/4c", "sim", "sim");
+
+                // Check if the employee exists
+                ps = con.prepareStatement("SELECT * FROM emp WHERE eno = ?");
+                ps.setString(1, eno);
+                rs = ps.executeQuery();
+
+                if (rs.next()) {
+                    // Employee exists, update the record
+                    ps = con.prepareStatement("UPDATE emp SET ename = ?, age = ?, desg = ?, salary = ? WHERE eno = ?");
+                    ps.setString(1, ename);
+                    ps.setString(2, eage);
+                    ps.setString(3, edesg);
+                    ps.setString(4, sal);
+                    ps.setString(5, eno);
+                    ps.executeUpdate();
+                    out.println("Task has been updated successfully!<br>");
+                } else {
+                    // Employee doesn't exist, insert a new record
+                    ps = con.prepareStatement("INSERT INTO emp (eno, ename, age, desg, salary) VALUES (?, ?, ?, ?, ?)");
+                    ps.setString(1, eno);
+                    ps.setString(2, ename);
+                    ps.setString(3, eage);
+                    ps.setString(4, edesg);
+                    ps.setString(5, sal);
+                    ps.executeUpdate();
+                    out.println("Record has been added successfully!<br>");
+                }
+
+            } catch (Exception e) {
+                out.println("Error: " + e.getMessage());
+                e.printStackTrace();
+            } finally {
+                // Close resources
+                if (rs != null) try { rs.close(); } catch (SQLException e) { e.printStackTrace(); }
+                if (ps != null) try { ps.close(); } catch (SQLException e) { e.printStackTrace(); }
+                if (con != null) try { con.close(); } catch (SQLException e) { e.printStackTrace(); }
+            }
+        %>
+    </body>
+</html>
+create table emp(eno int, ename char(10),age int, desg char(10),salary int);
