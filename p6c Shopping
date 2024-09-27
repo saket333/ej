@@ -1,0 +1,90 @@
+ShoppingCart.java
+package ejb;
+
+import java.util.ArrayList;
+import java.util.List;
+import javax.ejb.Stateful;
+
+@Stateful
+public class ShoppingCart {
+
+    private List<String> items = new ArrayList<>(); // List to hold items
+
+    // Method to add an item to the cart
+    public void addItem(String item) {
+        items.add(item);
+    }
+
+    // Method to remove an item from the cart
+    public void removeItem(String item) {
+        items.remove(item);
+    }
+
+    // Method to retrieve all items from the cart
+    public List<String> getItems() {
+        return items;
+    }
+}
+CartServlet.java
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package ejb;
+
+import java.io.IOException;
+import java.io.PrintWriter;
+import javax.ejb.EJB;
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+@WebServlet("/cart")
+public class CartServlet extends HttpServlet {
+
+    @EJB
+    private ShoppingCart shoppingCartBean; // Injecting EJB
+
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        response.setContentType("text/html;charset=UTF-8");
+
+        try (PrintWriter out = response.getWriter()) {
+            out.println("<html><body>");
+            out.println("<h1>Simple Shopping Cart</h1>");
+
+            String action = request.getParameter("action");
+            String item = request.getParameter("item");
+
+            // Add item action
+            if ("add".equals(action) && item != null) {
+                shoppingCartBean.addItem(item);
+                out.println("<p>Added: " + item + "</p>");
+            }
+
+            // Remove item action
+            if ("remove".equals(action) && item != null) {
+                shoppingCartBean.removeItem(item);
+                out.println("<p>Removed: " + item + "</p>");
+            }
+
+            // Display items in the cart
+            out.println("<h2>Items in Cart:</h2>");
+            for (String cartItem : shoppingCartBean.getItems()) {
+                out.println("<p>" + cartItem + 
+                            " <a href='cart?action=remove&item=" + cartItem + "'>Remove</a></p>");
+            }
+
+            // Links for adding items
+            out.println("<hr>");
+            out.println("<a href='cart?action=add&item=Apple'>Add Apple</a><br>");
+            out.println("<a href='cart?action=add&item=Banana'>Add Banana</a><br>");
+            out.println("<a href='cart?action=add&item=Orange'>Add Orange</a><br>");
+            out.println("</body></html>");
+        }
+    }
+}
