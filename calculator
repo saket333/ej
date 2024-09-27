@@ -1,0 +1,106 @@
+index.html
+<html>
+    <head>
+        <title>  Calculator App 
+          </title>
+    </head><body>
+    <form action="CalculatorServlet">
+        Enter First Number<input type="text" name="txtN1"><br>
+        Enter Second Number<input type="text" name="txtN2"><br>
+        Select an Operation 
+        <input type="radio" name="opr" value="+">ADDITION
+        <input type="radio" name="opr" value="-">SUBTRACTION
+        <input type="radio" name="opr" value="*">MULTIPLICATION
+        <input type="radio" name="opr" value="/">DIVISION
+        <br>
+        <input type="reset">
+        <input type="Submit" value="Calculate">
+    </form></body>
+</html>
+
+CalculatorServlet.java
+import java.io.IOException;
+import java.io.PrintWriter;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+public class CalculatorServlet extends HttpServlet {
+
+    protected void processRequest(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        response.setContentType("text/html;charset=UTF-8");
+        try (PrintWriter out = response.getWriter()) {
+            out.println("<html><head><title>Servlet Calculator</title></head><body>");
+            
+            // Get parameters from the request
+            String n1Param = request.getParameter("txtN1");
+            String n2Param = request.getParameter("txtN2");
+            String opr = request.getParameter("opr");
+
+            // Check for null or empty parameters
+            if (n1Param == null || n2Param == null || opr == null || n1Param.isEmpty() || n2Param.isEmpty()) {
+                out.println("<h1>Error: Please provide both numbers and an operator.</h1>");
+                out.println("</body></html>");
+                return;
+            }
+
+            double n1 = Double.parseDouble(n1Param);
+            double n2 = Double.parseDouble(n2Param);
+            double result = 0;
+
+            switch (opr) {
+                case "+":
+                    result = n1 + n2;
+                    break;
+                case "-":
+                    result = n1 - n2;
+                    break;
+                case "*":
+                    result = n1 * n2;
+                    break;
+                case "/":
+                    if (n2 != 0) {
+                        result = n1 / n2;
+                    } else {
+                        out.println("<h1>Error: Division by zero is not allowed.</h1>");
+                        out.println("</body></html>");
+                        return;
+                    }
+                    break;
+                default:
+                    out.println("<h1>Error: Invalid operator.</h1>");
+                    out.println("</body></html>");
+                    return;
+            }
+
+            out.println("<h1>Result = " + result + "</h1>");
+            out.println("</body></html>");
+        } catch (NumberFormatException e) {
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            try (PrintWriter out = response.getWriter()) {
+                out.println("<html><head><title>Error</title></head><body>");
+                out.println("<h1>Error: Invalid number format.</h1>");
+                out.println("</body></html>");
+            }
+        }
+    }
+
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        processRequest(request, response);
+    }
+
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        processRequest(request, response);
+    }
+
+    @Override
+    public String getServletInfo() {
+        return "Short description";
+    }
+}
