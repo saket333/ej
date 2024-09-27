@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Cookie Demo</title>
+</head>
+<body>
+    <h2>Welcome to the Cookie Demo</h2>
+    <form action="Page1" method="POST"> 
+        Enter Your Name: <input type="text" name="txtName" required><br> 
+        <input type="submit" value="~~~ Click to Enter ~~~"> 
+    </form> 
+</body> 
+</html>
+ Page1.java
+ package mypack;
+
+import java.io.*;
+import javax.servlet.ServletException;
+import javax.servlet.http.*;
+
+public class Page1 extends HttpServlet {
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) 
+            throws ServletException, IOException {
+        response.setContentType("text/html;charset=UTF-8");
+        PrintWriter out = response.getWriter();
+
+        try {
+            String name = request.getParameter("txtName");
+
+            // Create a cookie to store the user's name
+            Cookie nameCookie = new Cookie("username", name);
+            nameCookie.setMaxAge(60 * 60 * 24); // Cookie lasts for 1 day
+            response.addCookie(nameCookie);
+
+            // Output a welcome message
+            out.println("<html><head><title>Welcome</title></head>");
+            out.println("<body>");
+            out.println("<h1>Welcome, " + name + "!</h1>");
+            out.println("<p>Your name has been saved in a cookie.</p>");
+            out.println("<h2><a href='Page2'>Click here to go to Page 2</a></h2>"); // Link to Page 2
+            out.println("</body></html>");
+        } finally {
+            out.close(); // Ensure PrintWriter is closed
+        }
+    }
+}
+Page2.java
+
+package mypack;
+
+import java.io.*;
+import javax.servlet.ServletException;
+import javax.servlet.http.*;
+
+public class Page2 extends HttpServlet {
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) 
+            throws ServletException, IOException { 
+        response.setContentType("text/html;charset=UTF-8"); 
+        PrintWriter out = response.getWriter(); 
+        
+        try {
+            out.println("<html><head><title>Page2</title></head>"); 
+            out.println("<body bgcolor='yellow'>"); 
+            
+            Cookie[] ck = request.getCookies(); 
+            int visitCount = 1; // Default visit count
+            
+            if (ck != null) { // Check if cookies are not null
+                for (Cookie cookie : ck) { 
+                    if (cookie.getName().equals("visit")) { 
+                        visitCount = Integer.parseInt(cookie.getValue()) + 1; 
+                        out.println("<h1>Visit No: " + visitCount + "</h1>"); 
+                        cookie.setValue(String.valueOf(visitCount)); // Update cookie value
+                        response.addCookie(cookie); // Add updated cookie
+                    } else { 
+                        out.println(cookie.getName() + " = " + cookie.getValue() + "<br>"); 
+                    } 
+                } 
+            } else {
+                out.println("<h1>This is your first visit!</h1>"); 
+            }
+
+            // Create a cookie if it doesn't exist
+            Cookie visitCookie = new Cookie("visit", String.valueOf(visitCount));
+            response.addCookie(visitCookie); 
+
+            out.println("<h1><a href='Page3'>Click to visit Page 3</a></h1>"); 
+            out.println("<h1><a href='Page4'>Click to visit Page 4</a></h1>"); 
+            out.println("<h1><a href='Page5'>Click to visit Page 5</a></h1>"); 
+            out.println("</body>"); 
+            out.println("</html>"); 
+        } finally {
+            out.close(); // Ensure PrintWriter is closed
+        }
+    }
+}
