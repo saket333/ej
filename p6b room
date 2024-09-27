@@ -144,3 +144,4 @@ ServletException,IOException
         } 
     } 
 }
+create table room(Total int,OCC int);
