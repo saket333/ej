@@ -1,0 +1,159 @@
+
+<!DOCTYPE html> 
+<html> 
+    <head> 
+        <title>JSP Page</title> 
+        <meta charset="UTF-8"> 
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+    </head> 
+    <body> 
+        <a href="SetDemo.jsp">SetDemo</a><br> 
+        <a href="MaxIF.jsp">MaxIF</a><br> 
+        <a href="ForEachDemo.jsp">ForEachDemo</a><br> 
+        <a href="OutDemo.jsp">OutDemo</a><br> 
+        <a href="URLDemo.jsp">URLDemo</a><br> 
+        <a href="Choose_When_Otherwise.jsp">Choose_When_Otherwise</a><br>  
+    </body> 
+</html>
+
+URLDemo.jsp
+<%@page contentType="text/html" pageEncoding="UTF-8"%> 
+<%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%> 
+<!DOCTYPE html> 
+<html> 
+    <head> 
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"> 
+        <title>JSP Page</title> 
+    </head> 
+    <body> 
+        <c:url value="/index.html"/> 
+    </body> 
+</html> 
+
+SetDemo.jsp
+<%@page contentType="text/html" pageEncoding="UTF-8"%> 
+<%@taglib prefix="c" uri="http://java.sun.com/jstl/core"%> 
+<!DOCTYPE html> 
+<html> 
+    <head> 
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"> 
+        <title>JSP Page</title> 
+    </head> 
+    <body> 
+        <c:set var="pageTitle" scope="application"  
+               value="Dukes Soccer Premier League:Registartion"/> 
+            ${pageTitle} 
+    </body> 
+</html> 
+
+OutDemo.jsp
+<%@page contentType="text/html" pageEncoding="UTF-8"%> 
+<%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%> 
+<!DOCTYPE html> 
+<html> 
+    <head> 
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"> 
+        <title>JSP Page</title> 
+    </head> 
+    <body> 
+        <c:set var="name" value="Jhon"/> 
+        My name is: <c:out value="${name}"/> 
+    </body> 
+</html>
+
+MaxIF.jsp
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Find Maximum</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+    <h1>Find the Maximum Value</h1>
+    <form action="IFDemo.jsp" method="GET"> 
+        x = <input type="text" name="x" required /><br> 
+        y = <input type="text" name="y" required /><br> 
+        <input type="submit" value="Check Max" /> 
+    </form> 
+</body>
+</html>
+
+IFDemo.jsp
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Maximum Value Finder</title>
+</head>
+<body>
+    <h1>Result</h1>
+    <%
+        // Retrieve parameters from the request
+        String xStr = request.getParameter("x");
+        String yStr = request.getParameter("y");
+
+        try {
+            // Parse the values to integers
+            int x = Integer.parseInt(xStr);
+            int y = Integer.parseInt(yStr);
+
+            // Compare and find the maximum value
+            int max = (x > y) ? x : y;
+
+            // Display the result
+            out.println("<h2>The maximum value is: " + max + "</h2>");
+
+        } catch (NumberFormatException e) {
+            // Handle invalid inputs
+            out.println("<h2>Invalid input! Please enter valid integers for x and y.</h2>");
+        }
+    %>
+    <a href="index.html">Go Back</a>
+</body>
+</html>
+
+ForEachDemo.jsp
+<%@page contentType="text/html" pageEncoding="UTF-8"%> 
+<%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%> 
+<!DOCTYPE html> 
+<html> 
+    <head> 
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"> 
+        <title>JSP Page</title> 
+    </head> 
+    <body> 
+        <c:forEach begin="1" end="10" var="i"> 
+            The Square of <c:out value="${i}=${i*i}"/><br> 
+        </c:forEach> 
+    </body>             
+</html> 
+
+Choose__When__Otherwise.jsp
+
+<%@page contentType="text/html" pageEncoding="UTF-8"%> 
+<%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%> 
+<!DOCTYPE html> 
+<html> 
+    <head> 
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"> 
+        <title>JSP Page</title> 
+    </head> 
+    <body> 
+        <c:set var="income" value="${4000*4}"/> 
+        Your Income is: <c:out value="${income}"/> 
+        <c:choose> 
+            <c:when test="${income<=1000}"> 
+                Income is not good 
+            </c:when> 
+            <c:when test="${income > 10000}"> 
+                Income is very good 
+            </c:when> 
+
+ 
+            <c:otherwise> 
+                Income is undetermined 
+                </c:otherwise> 
+        </c:choose> 
+    </body> 
+</html> 
