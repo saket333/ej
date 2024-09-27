@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html>
+    <head>
+        <title>bhadwi shraddha</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    </head>
+    <form action="implicitObjectEx.jsp">
+        Enter Username:<input type="text"><br>
+        Enter Email:<input type="email"><br>
+        <input type="submit" value="Submit">
+    </form>
+    <body>
+        <div>TODO write content</div>
+    </body>
+</html>
+implicitObjectEx.jsp
+<%@page contentType="text/html" pageEncoding="UTF-8"%> 
+<!DOCTYPE html> 
+<html> 
+    <head> 
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"> 
+        <title>Intrinsic Objects in JSP</title>
+    </head> 
+    <body> 
+        <h1>Use of Intrinsic Objects in JSP</h1> 
+        
+        <h1>Request Object</h1> 
+        Query String: <%= request.getQueryString() != null ? request.getQueryString() : "No query string" %><br> 
+        Context Path: <%= request.getContextPath() %><br> 
+        Remote Host: <%= request.getRemoteHost() != null ? request.getRemoteHost() : "Unknown" %><br> 
+        
+        <h1>Response Object</h1> 
+        Character Encoding Type: <%= response.getCharacterEncoding() != null ? response.getCharacterEncoding() : "Not set" %><br> 
+        Content Type: <%= response.getContentType() != null ? response.getContentType() : "Not set" %><br> 
+        Locale: <%= response.getLocale() %><br> 
+        
+        <h1>Session Object</h1> 
+        ID: <%= session != null ? session.getId() : "No session" %><br> 
+        Creation Time: <%= session != null ? new java.util.Date(session.getCreationTime()) : "No session" %><br> 
+        Last Access Time: <%= session != null ? new java.util.Date(session.getLastAccessedTime()) : "No session" %><br> 
+    </body> 
+</html> 
