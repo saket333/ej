@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+index.html
+<html>
+    <head>
+        <title>TODO supply a title</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    </head>
+    <body>
+    <center>
+        <form action="insert.jsp" method="post">
+    <label for="t1">Student ID:</label>
+    <input type="text" name="t1" required><br>
+
+    <label for="t3">Student Name:</label>
+    <input type="text" name="t3" required><br>
+
+    <label for="m1">Marks (SPM):</label>
+    <input type="text" name="m1" required><br>
+
+    <label for="m2">Marks (EJ):</label>
+    <input type="text" name="m2" required><br>
+
+    <label for="m3">Marks (IOT):</label>
+    <input type="text" name="m3" required><br>
+
+    <input type="submit" value="Submit">
+</form>
+
+    </center>
+    </body>
+</html>
+
+
+insert.jsp
+<%@page import="javax.naming.InitialContext"%>
+<%@page import="com.test.DatabaseOperationLocal"%>
+<%@page contentType="text/html" pageEncoding="UTF-8"%>
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Insert Marks</title>
+</head>
+<body>
+<%
+    try {
+        // Lookup the EJB
+        InitialContext ctx = new InitialContext();
+        DatabaseOperationLocal d1 = (DatabaseOperationLocal) ctx.lookup("java:module/DatabaseOperation");
+
+        // Retrieve parameters from the request
+        int sid = Integer.parseInt(request.getParameter("t1"));
+        String sname = request.getParameter("t3");
+        int spm = Integer.parseInt(request.getParameter("m1"));
+        int ej = Integer.parseInt(request.getParameter("m2"));
+        int iot = Integer.parseInt(request.getParameter("m3"));
+
+        // Debug output to verify values
+        out.println("<h2>Debug Information:</h2>");
+        out.println("Student ID: " + sid + "<br>");
+        out.println("Student Name: " + sname + "<br>");
+        out.println("Marks SPM: " + spm + "<br>");
+        out.println("Marks EJ: " + ej + "<br>");
+        out.println("Marks IOT: " + iot + "<br>");
+
+        // Call the EJB method to add marks
+        d1.AddMarks(sid, sname, spm, ej, iot);
+        out.println("<h1>Record is added successfully!</h1>");
+    } catch (Exception e) {
+        out.println("<h1>Error: " + e.getMessage() + "</h1>");
+    }
+%>
+</body>
+</html>
+
+
+
+DatabaseOperation.java
+
+package com.test;
+
+import javax.ejb.Stateless;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+
+@Stateless
+public class DatabaseOperation implements DatabaseOperationLocal {
+
+    private static final String DB_URL = "jdbc:derby://localhost:1527/marksdb"; // Adjust as needed
+    private static final String USER = "sim";
+    private static final String PASSWORD = "sim";
+
+    @Override
+    public void AddMarks(int sid, String sname, int spm, int ej, int iot) throws SQLException {
+        // Load the Derby driver
+        try {
+            Class.forName("org.apache.derby.jdbc.ClientDriver");
+        } catch (ClassNotFoundException e) {
+            throw new SQLException("Derby driver not found.", e);
+        }
+
+        // Using try-with-resources to manage connections and statements
+        try (Connection con = DriverManager.getConnection(DB_URL, USER, PASSWORD);
+             PreparedStatement ps = con.prepareStatement("INSERT INTO marks (rollno, sname, spm, ej, iot) VALUES (?, ?, ?, ?, ?)")) {
+            ps.setInt(1, sid);
+            ps.setString(2, sname);
+            ps.setInt(3, spm);
+            ps.setInt(4, ej);
+            ps.setInt(5, iot);
+            ps.executeUpdate();
+        }
+    }
+}
+
+
+DatabaseOperationLocal.java
+package com.test;
+
+import javax.ejb.Local;
+import java.sql.SQLException;
+
+@Local
+public interface DatabaseOperationLocal {
+    void AddMarks(int sid, String sname, int spm, int ej, int iot) throws SQLException;
+}
