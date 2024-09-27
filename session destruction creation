@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html>
+    <head>
+        <title>TODO supply a title</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    </head>
+    <body>
+        <div>TODO write content</div>
+    </body>
+</html>
+VisitServlet.java
+import java.io.*; 
+import javax.servlet.*; 
+import javax.servlet.http.*; 
+public class VisitServlet extends HttpServlet  
+{ 
+    private int counter; 
+    public void doGet(HttpServletRequest req,HttpServletResponse res)throws 
+ServletException,IOException 
+    { 
+
+ 
+        res.setContentType("text/html"); 
+       PrintWriter out = res.getWriter(); 
+        HttpSession session=req.getSession(true); 
+        if(session.isNew()) 
+        { 
+            out.print("This is the first time you are visiting this page"); 
+            ++counter; 
+        } 
+        else 
+        { 
+            synchronized(this) 
+            { 
+                if(counter==10) 
+                { 
+                    session.invalidate(); 
+                    counter=0; 
+                    req.getSession(false); 
+                } 
+                else 
+                    out.print("You have visited this page "+(++counter)+" times"); 
+            } 
+        } 
+    } 
+} 
