@@ -1,0 +1,25 @@
+Q.7 b) Develop simple visitor Statistics application using Message Driven Bean 
+[Stateless Session Bean].
+Step 1: Web-> web application -> Pract7BVisitorStatisticsMDBApp -> select dedicated 
+folders for storing libraries -> finish.
+Step2: Create a Database name visitorstat → Create table name → userstat → column 
+names 
+Firstvisitdt – timestamp
+Hostname – varchar 30 Primary Key
+Visits – int 
+Step3: Create a Session Bean named as VisitorStatBean → Select Stateless → package name 
+as ejb, do not select Local / Remote
+Step 4: Right click on Source Packages → Select New→ Other→ Enterprise Java Bean →
+MessageDrivenBean → EJB Name: BasicMessageBean →Package: ejb→ Select Project 
+Destination → Click on Add Button → Destination Name: jms/Queue → Destination Type 
+select the option Queue→ click on OK→ Click on Next → Activation Configuration 
+Properties should be as it is. → Click on Finish
+Step 5: 
+Before deploying and running the application, Glassfish Server setting is required. 
+Browse the path:
+Localhost:4848 on any browser.
+Find Resources -> connectors -> Connector Resources double click on Connector 
+Resources -> click on ‘New’ Button -> write JNDI name as -> jms/QueryFactory.
+Find Admin Object Resources and double click on that -> click on ‘New’ Button -> 
+write JNDI name as -> jms/Queue. 
+Now run index.jsp file.
