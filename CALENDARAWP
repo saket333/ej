@@ -1,0 +1,147 @@
+Webform1.aspx
+<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="WebForm1.aspx.cs" Inherits="calendar.WebForm1" %>
+
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head runat="server">
+    <title>Calendar Control Example for October</title>
+    <style>
+        body {
+            text-align: center;
+        }
+        form {
+            display: inline-block;
+            margin-top: 50px;
+        }
+    </style>
+</head>
+<body>
+    <form id="form1" runat="server">
+        <div style="padding: 20px; border: 2px solid olive; background-color: #F5F5F5; text-align: center;">
+            <h2 style="color: olive; font-family: 'Georgia';">October Calendar Events</h2>
+
+            <asp:Calendar ID="Calendar1" runat="server" BackColor="White"
+                BorderColor="Olive" BorderWidth="2px" DayNameFormat="Shortest"
+                Font-Names="Georgia" Font-Size="10pt" ForeColor="Olive" Height="350px" Width="350px"
+                NextPrevFormat="ShortMonth" OnDayRender="Calendar1_DayRender"
+                ShowGridLines="True" OnSelectionChanged="Calendar1_SelectionChanged">
+                
+                <DayHeaderStyle BackColor="Olive" Font-Bold="True" ForeColor="White" Height="20px" />
+                <NextPrevStyle BorderStyle="Solid" BorderWidth="2px" Font-Size="10pt" ForeColor="White" />
+                <OtherMonthDayStyle BackColor="#D9EAD3" BorderStyle="Solid" ForeColor="Olive" />
+                <SelectedDayStyle BackColor="Olive" Font-Bold="True" ForeColor="White" />
+                <SelectorStyle BackColor="#D9EAD3" />
+                <TitleStyle BackColor="Olive" Font-Bold="True" Font-Size="12pt" ForeColor="White" />
+                <TodayDayStyle BackColor="#D9EAD3" ForeColor="Olive" />
+                <WeekendDayStyle BackColor="White" ForeColor="Olive" Height="50px" />
+            </asp:Calendar>
+
+            <br /><br />
+
+            <asp:Button ID="btnResult" runat="server" Text="Show Result" 
+                BackColor="Olive" ForeColor="White" Font-Names="Verdana" 
+                BorderStyle="Solid" BorderColor="Olive" BorderWidth="2px" 
+                OnClick="btnResult_Click" />
+
+            <asp:Button ID="btnReset" runat="server" Text="Reset" 
+                BackColor="Olive" ForeColor="White" Font-Names="Verdana" 
+                BorderStyle="Solid" BorderColor="Olive" BorderWidth="2px" 
+                OnClick="btnReset_Click" />
+
+            <br /><br />
+
+            <asp:Label ID="Label1" runat="server" Text="" 
+                Font-Names="Georgia" Font-Size="10pt" ForeColor="Olive"></asp:Label><br />
+            <asp:Label ID="Label2" runat="server" Text="" 
+                Font-Names="Georgia" Font-Size="10pt" ForeColor="Olive"></asp:Label><br />
+            <asp:Label ID="Label3" runat="server" Text="" 
+                Font-Names="Georgia" Font-Size="10pt" ForeColor="Olive"></asp:Label><br />
+            <asp:Label ID="Label4" runat="server" Text="" 
+                Font-Names="Georgia" Font-Size="10pt" ForeColor="Olive"></asp:Label><br />
+            <asp:Label ID="Label5" runat="server" Text="" 
+                Font-Names="Georgia" Font-Size="10pt" ForeColor="Olive"></asp:Label><br />
+        </div>
+    </form>
+</body>
+</html>
+
+WebForm.1.aspx.cs
+using System;
+using System.Web.UI.WebControls;
+
+namespace calendar
+{
+    public partial class WebForm1 : System.Web.UI.Page
+    {
+        protected void btnResult_Click(object sender, EventArgs e)
+        {
+            Calendar1.Caption = "October Highlights";
+            Calendar1.FirstDayOfWeek = FirstDayOfWeek.Sunday;
+            Calendar1.NextPrevFormat = NextPrevFormat.ShortMonth;
+            Calendar1.TitleFormat = TitleFormat.Month;
+
+            Label2.Text = "Today's Date: " + Calendar1.TodaysDate.ToShortDateString();
+
+            int currentYear = DateTime.Now.Year;
+            DateTime halloweenDate = new DateTime(currentYear, 10, 31);
+            Label3.Text = "Halloween: " + halloweenDate.ToShortDateString();
+
+            TimeSpan daysUntilHalloween = halloweenDate - DateTime.Now;
+            Label4.Text = "Days Remaining For Halloween: " + daysUntilHalloween.Days.ToString();
+
+            DateTime newYearDate = new DateTime(currentYear, 12, 31);
+            TimeSpan daysUntilNewYear = newYearDate - DateTime.Now;
+            Label5.Text = "Days Remaining for New Year: " + daysUntilNewYear.Days.ToString();
+
+            if (Calendar1.SelectedDate.ToShortDateString() == halloweenDate.ToShortDateString())
+                Label3.Text = "<b>Happy Halloween!</b>";
+
+            DateTime someHolidayEndDate = new DateTime(currentYear, 10, 15);
+            if (Calendar1.SelectedDate.ToShortDateString() == someHolidayEndDate.ToShortDateString())
+                Label3.Text = "<b>Holiday End</b>";
+        }
+
+        protected void Calendar1_DayRender(object sender, System.Web.UI.WebControls.DayRenderEventArgs e)
+        {
+            int currentYear = DateTime.Now.Year;
+
+            if (e.Day.Date.Day == 31 && e.Day.Date.Month == 10)
+            {
+                e.Cell.BackColor = System.Drawing.Color.LightSalmon;
+                Label lbl = new Label();
+                lbl.Text = "<br>Halloween!";
+                e.Cell.Controls.Add(lbl);
+
+                Image img = new Image();
+                img.ImageUrl = "img.jpg";
+                img.Height = 20;
+                img.Width = 20;
+                e.Cell.Controls.Add(img);
+            }
+
+            if (e.Day.Date.Day == 15 && e.Day.Date.Month == 10)
+            {
+                e.Cell.BackColor = System.Drawing.Color.LightGreen;
+                Label lbl = new Label();
+                lbl.Text = "<br>October Holiday!";
+                e.Cell.Controls.Add(lbl);
+            }
+        }
+
+        protected void btnReset_Click(object sender, EventArgs e)
+        {
+            Label1.Text = "";
+            Label2.Text = "";
+            Label3.Text = "";
+            Label4.Text = "";
+            Label5.Text = "";
+            Calendar1.SelectedDates.Clear();
+        }
+
+        protected void Calendar1_SelectionChanged(object sender, EventArgs e)
+        {
+            Label1.Text = "Your Selected Date: " + Calendar1.SelectedDate.Date.ToString();
+        }
+    }
+}
+
